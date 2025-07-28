@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Norcet Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .question {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .options {
+            text-align: left;
+        }
+        .options label {
+            display: block;
+            margin: 8px 0;
+            background: #ececec;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            background: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .timer {
+            font-size: 16px;
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Norcet Quiz</h1>
+        <div class="timer">समय: <span id="time">60</span> सेकंड</div>
+        <div class="question" id="question">प्रश्न लोड हो रहा है...</div>
+        <div class="options" id="options"></div>
+        <button id="nextBtn">अगला</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "1. भारत की राजधानी क्या है?",
+                options: ["दिल्ली", "मुंबई", "कोलकाता", "चेन्नई"],
+                answer: 0
+            },
+            {
+                question: "2. भारत के राष्ट्रपति कौन हैं?",
+                options: ["नरेंद्र मोदी", "द्रौपदी मुर्मू", "अमित शाह", "राहुल गांधी"],
+                answer: 1
+            },
+            {
+                question: "3. कौन सा हार्मोन गर्भावस्था बनाए रखता है?",
+                options: ["प्रोजेस्टेरोन", "इंसुलिन", "टेस्टोस्टेरोन", "एस्ट्रोजन"],
+                answer: 0
+            },
+            {
+                question: "4. महिला प्रजनन प्रणाली का मुख्य अंग कौन सा है?",
+                options: ["अंडाशय", "ह्रदय", "फेफड़े", "लिवर"],
+                answer: 0
+            },
+            {
+                question: "5. सामान्य गर्भावस्था की अवधि कितने दिन होती है?",
+                options: ["280 दिन", "200 दिन", "150 दिन", "300 दिन"],
+                answer: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const negativeMark = 0.33;
+        let timeLeft = 60;
+        const timerElement = document.getElementById('time');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const nextBtn = document.getElementById('nextBtn');
+        const resultElement = document.getElementById('result');
+
+        function loadQuestion() {
+            const q = quizData[currentQuestion];
+            questionElement.innerText = q.question;
+            optionsElement.innerHTML = "";
+            q.options.forEach((opt, index) => {
+                const label = document.createElement("label");
+                label.innerHTML = `<input type="radio" name="option" value="${index}"> ${opt}`;
+                optionsElement.appendChild(label);
+            });
+        }
+
+        function checkAnswer() {
+            const selected = document.querySelector('input[name="option"]:checked');
+            if (selected) {
+                if (parseInt(selected.value) === quizData[currentQuestion].answer) {
+                    score += 1;
+                } else {
+                    score -= negativeMark;
+                }
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            checkAnswer();
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        });
+
+        function endQuiz() {
+            questionElement.style.display = "none";
+            optionsElement.style.display = "none";
+            nextBtn.style.display = "none";
+            resultElement.innerText = `आपका स्कोर: ${score.toFixed(2)} / ${quizData.length}`;
+        }
+
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        // Start Quiz
+        loadQuestion();
+        startTimer();
+    </script>
+</body>
+</html>
